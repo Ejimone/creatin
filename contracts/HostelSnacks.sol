@@ -13,4 +13,40 @@ contract HostelSnacks {
 
     mapping (string => Snack) snacks;
     mapping (string => uint256) name;
+    mapping (address => Buyer) buyers;
+    mapping (address => Seller) sellers;
+
+
+    struct Buyer {
+        address payable buyerAddress;
+        string buyerUsername;
+        uint256 amountSpent;
+        string[] purchasedSnacks;
+        string[] snackIds;
+    }
+
+
+
+    struct Seller {
+        address payable sellerAddress;
+        string sellerUsername;
+        uint256 amountEarnings;
+        string[] snackIds;
+        string[] soldSnacks;
+        uint256 totalSnacksSold;
+        uint256 totalEarnings;
+    }
+
+
+    modifier onlySeller() {
+        require(msg.sender == sellers[msg.sender].sellerAddress, "Only seller can perform this action");
+        _;
+    }
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyers[msg.sender].buyerAddress, "Only buyer can perform this action");
+        _;
+    }
+
+
 }
