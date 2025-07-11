@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Breakfast DApp</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>College Breakfast Portal</h1>
+
+        <div class="section">
+            <h2>Connect to MetaMask</h2>
+            <button id="connectButton">Connect</button>
+            <p>Status: <span id="connectionStatus">Not Connected</span></p>
+            <p>Your Address: <span id="userAddress"></span></p>
+        </div>
+
+        <div class="section">
+            <h2>Warden Controls</h2>
+            <button id="openPortalButton" disabled>Open Portal</button>
+            <button id="closePortalButton" disabled>Close Portal</button>
+            <div class="form-group">
+                <input type="text" id="studentAddressInput" placeholder="Enter student address">
+                <button id="registerStudentButton" disabled>Register Student</button>
+                <button id="unregisterStudentButton" disabled>Unregister Student</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Student Actions</h2>
+            <div class="form-group">
+                <input type="text" id="foodItemInput" placeholder="Enter food item">
+                <button id="orderFoodButton" disabled>Order Food</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Contract Information</h2>
+            <p>Portal Status: <span id="portalStatus"></span></p>
+            <p>Your Order Count: <span id="orderCount"></span></p>
+            <p>Last Order: <span id="lastOrder"></span></p>
+        </div>
+
+        <div class="status-section">
+            <h3>Transaction Status</h3>
+            <p id="transactionStatus"></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
