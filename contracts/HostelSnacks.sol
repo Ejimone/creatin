@@ -176,5 +176,46 @@ contract HostelSnacks {
         }
         emit SnackDeleted(_snackId);
     }
+
+
+    function getSnack(string memory _snackId) public view returns (string memory, uint256, uint256) {
+        require(bytes(_snackId).length > 0, "Snack ID cannot be empty");
+        require(snacks[_snackId].quantity > 0, "Snack does not exist");
+        Snack memory snack = snacks[_snackId];
+        return (snack.name, snack.price, snack.quantity);
+    }
+
+    function getSeller(address _sellerAddress) public view returns (string memory, uint256, string[] memory, string[] memory, uint256, uint256) {
+        require(sellers[_sellerAddress].sellerAddress != address(0), "Seller not registered");
+        Seller memory seller = sellers[_sellerAddress];
+        return (seller.sellerUsername, seller.amountEarnings, seller.snackIds, seller.soldSnacks, seller.totalSnacksSold, seller.totalEarnings);
+    }
+
+
+    function getBuyer(address _buyerAddress) public view returns (string memory, uint256, string[] memory, string[] memory) {
+        require(buyers[_buyerAddress].buyerAddress != address(0), "Buyer not registered");
+        Buyer memory buyer = buyers[_buyerAddress];
+        return (buyer.buyerUsername, buyer.amountSpent, buyer.purchasedSnacks, buyer.snackIds);
+    }
+
+    function getAllSellers() public view returns (Seller[] memory) {
+        return sellersList;
+    }
+
+    function getAllSnacks() public view returns (Snack[] memory) {
+        Snack[] memory allSnacks = new Snack[](sellersList.length);
+        for (uint256 i = 0; i < sellersList.length; i++) {
+            allSnacks[i] = snacks[sellersList[i].snackIds[0]]; // Assuming each seller has at least one snack
+        }
+        return allSnacks;
+    }
+
+    function refundBuyer(address payable _buyerAddress, uint256 _amount) onlyOwner public {
+        require(buyers[_buyerAddress].buyerAddress != address(0), "Buyer not registered");
+        require(_amount > 0, "Refund amount must be greater than zero");
+        require(buyers[_buyerAddress].amountSpent >= _amount, "Insufficient amount spent by buyer");
+        buyers[_buyerAddress].amountSpent -= _amount;
+        _buyerAddress.transfer(_amount);
+    }
     
 }
