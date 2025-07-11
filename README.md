@@ -1,4 +1,6 @@
-# Sample Hardhat Project
+
+# creatin
+Smart contract project using Hardhat
 
 This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
 
