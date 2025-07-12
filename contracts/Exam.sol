@@ -9,7 +9,7 @@ contract Exam {
     string[] questions;
     bool isExamOpen; // if the exam is open for taking
     bool isExamFinished; // if the exam is finished
-    address payable owner; // the owner of the exam contract, will be able to recieve payments
+    address payable public owner; // the owner of the exam contract, will be able to recieve payments
     bytes32 examId; // unique identifier for the exam
     string examName; // name of the exam
     address[] participants; // list of participants who have taken the exam
@@ -116,9 +116,9 @@ contract Exam {
         require(!isExamOpen, "Exam is already open");
         require(_examFee > 0, "Exam fee must be greater than zero");
         require(_examDuration > 0, "Exam duration must be greater than zero");
-        require(startTime < _endTime, "Start time must be before end time");
-        require(block.timestamp < startTime, "Start time must be in the future");
-        require(totalParticipants >= 1, "At least one participant must be registered");
+        require(_startTime < _endTime, "Start time must be before end time");
+        require(block.timestamp < _startTime, "Start time must be in the future");
+        require(student != address(0), "At least one student must be registered");
         require(bytes(examName).length > 0, "Exam name must be set");
         examFee = _examFee;
         examDuration = _examDuration;
@@ -156,6 +156,102 @@ contract Exam {
         require(student == msg.sender, "Only registered student can start the exam");
         isExamOpen = true;
         startTime = block.timestamp; // set start time to current time
+    }
+
+
+    function submitExam() internal onlyStudent examOpen {
+        require(isExamOpen, "Exam is not open");
+        require(block.timestamp >= startTime && block.timestamp <= endTime, "Exam is not currently available");
+        isExamOpen = false;
+        isExamFinished = true;
+        endTime = block.timestamp; // set end time to current time
+        calculateScore();
+    }
+    
+    function calculateScore() internal onlyStudent {
+        // Calculate the student's score based on their answers
+        // This is a placeholder implementation
+        uint256 studentScore = maxScore / 2; // Example: 50% of max score
+        
+        // Check if the student passed the exam and store the result
+        bool isPassed = studentScore >= passScore;
+        
+        // Update state variables
+        score = studentScore;
+        results.push(studentScore);
+        
+        // Add student to participants if not already there
+        bool isParticipant = false;
+        for (uint i = 0; i < participants.length; i++) {
+            if (participants[i] == student) {
+                isParticipant = true;
+                break;
+            }
+        }
+        
+        if (!isParticipant) {
+            participants.push(student);
+            totalParticipants++;
+        }
+    }
+
+
+    function caughtCheating() internal onlyInvigilatorOrTeacher {
+        require(isExamOpen, "Exam is not open");
+        require(!isExamFinished, "Exam is already finished");
+        isExamOpen = false;
+        isExamFinished = true;
+        endTime = block.timestamp; // set end time to current time
+
+        if (student != address(0)) {
+            // Reset the student's score and results
+            score = 0;
+            // Find and remove the student's result by finding their index in participants
+            for (uint i = 0; i < participants.length; i++) {
+                if (participants[i] == student && i < results.length) {
+                    delete results[i];
+                    break;
+                }
+            }
+            // Optionally, you can also remove the student from participants
+            for (uint j = 0; j < participants.length; j++) {
+                if (participants[j] == student) {
+                    delete participants[j];
+                    break;
+                }
+            }
+        }
+    }
+
+
+    function getExamDetails() public view returns (ExamDetails memory) {
+        return ExamDetails({
+            examId: examId,
+            examName: examName,
+            examDescription: "This is a sample exam description", // Placeholder for actual description
+            examFee: examFee,
+            examDuration: examDuration,
+            startTime: startTime,
+            endTime: endTime,
+            teacher: teacher,
+            invigilator: invigilator,
+            participants: participants,
+            questions: new Question[](0), // Placeholder for actual questions
+            results: new Result[](0), // Placeholder for actual results
+            isExamOpen: isExamOpen,
+            isExamFinished: isExamFinished
+        });
+    }
+
+
+    // function to make payment for the exam
+    function payForExam() public payable onlyStudent {
+        require(msg.sender == student, "only registered student can pay for the exam");
+        require(!hasPaid, "exam has already been paid for");
+        require(msg.value == examFee, "incorrect exam fee");
+        
+        hasPaid = true;
+        owner.transfer(msg.value); // transfer the exam fee to the owner
     }
 
 }
