@@ -87,6 +87,8 @@ contract Wallet {
     }
 
 
-
+    function getDepositors() external view returns (address[] memory) {
+        return depositors;
+    }
 
 }
