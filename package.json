@@ -8,7 +8,8 @@
     "payment-demo": "node scripts/payment/masterPaymentScript.js",
     "exam-payment": "node scripts/payment/examPaymentScript.js",
     "snacks-payment": "node scripts/payment/hostelSnacksPaymentScript.js",
-    "test-setup": "node scripts/payment/testSetup.js"
+    "test-setup": "node scripts/payment/testSetup.js",
+    "wallet-payment": "node scripts/walletPaymentScript.js"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^6.0.0",
